@@ -1,0 +1,60 @@
+{
+  "docs": {
+    "MANGUEIRAS LINHA FIAT.docx": {
+      "total_items": 104,
+      "with_images": 104,
+      "visual_only": 0,
+      "with_box": 104
+    },
+    "MANGUEIRAS LINHA FORD.docx": {
+      "total_items": 104,
+      "with_images": 104,
+      "visual_only": 0,
+      "with_box": 104
+    },
+    "MANGUEIRAS LINHA GM.docx": {
+      "total_items": 146,
+      "with_images": 146,
+      "visual_only": 0,
+      "with_box": 146
+    },
+    "MANGUEIRAS LINHA IMPORTADOS.docx": {
+      "total_items": 5,
+      "with_images": 5,
+      "visual_only": 0,
+      "with_box": 5
+    },
+    "MANGUEIRAS LINHA VOLKSWAGEN.docx": {
+      "total_items": 150,
+      "with_images": 150,
+      "visual_only": 0,
+      "with_box": 150
+    }
+  },
+  "total_products": 509,
+  "total_images": 509,
+  "black_pixels": 0,
+  "pixel_failures": 0,
+  "sections": {
+    "Filtro de Ar": 39,
+    "Radiador Superior": 108,
+    "Bomba D'Água": 48,
+    "Bocal do Tanque / Combustível": 18,
+    "Coletor de Admissão": 20,
+    "Radiador Inferior": 80,
+    "Respiro de Óleo / Antichama": 70,
+    "Aquecedor (Ar Quente)": 57,
+    "Outras Mangueiras": 21,
+    "Direção Hidráulica": 2,
+    "Reservatório de Expansão": 29,
+    "Radiador (Geral)": 13,
+    "Cavalete / Termostato": 4
+  },
+  "lines": {
+    "Linha Fiat": 104,
+    "Linha Ford": 104,
+    "Linha GM": 146,
+    "Linha Importados": 5,
+    "Linha Volkswagen": 150
+  }
+}
