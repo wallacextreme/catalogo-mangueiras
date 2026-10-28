@@ -1,0 +1,16 @@
+{
+  "name": "Catálogo Interno de Balcão - Miudezas",
+  "short_name": "Balcão Peças",
+  "description": "Localizador Visual de Caixas, Códigos Internos e Miudezas Automotivas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1d4ed8",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

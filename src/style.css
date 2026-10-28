@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Open Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+}
+
+/* Ocultar scrollbar mantendo rolagem fluida */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Impressão de Mapa de Caixas */
+@media print {
+  header, #filter-bar, .btn-card-edit, .btn-zoom-overlay, #lightbox-modal, #product-form-modal {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  #products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+  article {
+    border: 1px solid #000000 !important;
+    page-break-inside: avoid !important;
+  }
+}

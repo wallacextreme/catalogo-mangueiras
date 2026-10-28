@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catálogo de Balcão — Localizador Visual de Caixas & Miudezas</title>
+    <meta name="description" content="Localizador de caixas físicas, códigos internos e miudezas automotivas para balcão de autopeças" />
+    <meta name="theme-color" content="#1d4ed8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+  </head>
+  <body class="bg-counter-bg text-counter-text dark:bg-counter-darkBg dark:text-counter-darkText transition-colors duration-150 antialiased select-text">
+    <div id="app" class="min-h-screen flex flex-col"></div>
+    <script type="module" src="/src/main.ts"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "docs": {
+    "GRAMPOS,PRESILHAS,BATENTES E ACABAMENTOS...docx": {
+      "total_items": 478,
+      "with_images": 477,
+      "visual_only": 193,
+      "with_box": 388
+    },
+    "PEÇAS (MIUDEZAS) CATALOGO 2.docx": {
+      "total_items": 437,
+      "with_images": 436,
+      "visual_only": 8,
+      "with_box": 425
+    }
+  },
+  "total_products": 915,
+  "total_images": 913,
+  "black_pixels": 0,
+  "pixel_failures": 0,
+  "sections": {
+    "Grampos, Presilhas, Batentes e Acabamentos": 409,
+    "Porca Rápida e Buchas de Fixação": 49,
+    "Molas em Geral": 3,
+    "Alças, Moldura e Kits Banco": 8,
+    "Parafuso Fixação e Regulagem de Farol": 9,
+    "Reparos de Trambulador e Câmbio": 207,
+    "Castelo Vela (Tucho)": 21,
+    "Calota Cubo Roda": 7,
+    "Porcas Ponta Eixo / Homocinética / Amortecedor": 48,
+    "Bujão e Anéis de Cárter e Caixa": 20,
+    "Parafuso Suspensão / Balança / Motor": 3,
+    "Kit Embreagem e Kits de Pedal": 18,
+    "Bucha Caixa Direção": 11,
+    "Conexões e Engates Rápidos": 98,
+    "Regulagem de Freio": 4
+  }
+}
