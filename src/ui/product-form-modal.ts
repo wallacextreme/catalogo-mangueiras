@@ -6,6 +6,7 @@
 import { CatalogItem } from '../types/catalog';
 import { Icons } from './icons';
 import { convertBlobToStudioWebP } from '../media/webp-converter';
+import { resolveAssetUrl } from '../media/asset-url';
 import { dbService } from '../storage/indexeddb-service';
 
 export const CATALOG_SECTIONS = [
@@ -292,7 +293,7 @@ export class ProductFormModal {
 
     gallery.innerHTML = this.currentImages.map((imgSrc, idx) => `
       <div class="relative group aspect-square rounded-lg border border-slate-200 dark:border-slate-700 bg-white p-1 overflow-hidden">
-        <img src="${imgSrc}" class="w-full h-full object-contain" alt="Foto ${idx + 1}" />
+        <img src="${resolveAssetUrl(imgSrc)}" class="w-full h-full object-contain" alt="Foto ${idx + 1}" />
         <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
           <button type="button" class="btn-del-img p-1 rounded bg-red-600 text-white" data-index="${idx}" title="Remover Foto">
             ${Icons.trash('w-3.5 h-3.5')}

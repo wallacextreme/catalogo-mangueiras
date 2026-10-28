@@ -6,6 +6,7 @@
 
 import { CatalogItem } from '../types/catalog';
 import { Icons } from './icons';
+import { resolveAssetUrl } from '../media/asset-url';
 
 export class LightboxModal {
   private container: HTMLDivElement | null = null;
@@ -146,7 +147,7 @@ export class LightboxModal {
     const src = images[this.currentImageIndex] || this.currentItem.primaryImage || '';
 
     const imgEl = this.container.querySelector<HTMLImageElement>('#lb-image');
-    if (imgEl) imgEl.src = src;
+    if (imgEl) imgEl.src = resolveAssetUrl(src);
 
     const prevBtn = this.container.querySelector('#lb-prev');
     const nextBtn = this.container.querySelector('#lb-next');

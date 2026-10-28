@@ -6,6 +6,7 @@
 
 import { CatalogItem } from '../types/catalog';
 import { Icons } from './icons';
+import { resolveAssetUrl } from '../media/asset-url';
 
 export interface CardActionCallbacks {
   onZoom: (item: CatalogItem, imageIndex: number) => void;
@@ -35,7 +36,7 @@ export function renderProductCard(
       <!-- Imagem Ampliada do Mural -->
       <div class="relative w-full aspect-square bg-white flex items-center justify-center p-3 cursor-zoom-in overflow-hidden border-b border-slate-100 dark:border-slate-800">
         ${mainImage ? `
-          <img src="${mainImage}" alt="${item.cleanDescription}" loading="lazy" class="w-full h-full object-contain filter drop-shadow-sm group-hover:scale-105 transition-transform duration-200" />
+          <img src="${resolveAssetUrl(mainImage)}" alt="${item.cleanDescription}" loading="lazy" class="w-full h-full object-contain filter drop-shadow-sm group-hover:scale-105 transition-transform duration-200" />
         ` : `
           <div class="flex flex-col items-center justify-center text-slate-400 text-xs">
             ${Icons.camera('w-10 h-10 mb-1 text-slate-300')}
@@ -133,7 +134,7 @@ export function renderProductCard(
       <!-- Imagem Central com Zoom -->
       <div class="relative w-full h-48 bg-white rounded-lg border border-slate-100 dark:border-slate-800 flex items-center justify-center p-2 cursor-zoom-in group/img overflow-hidden">
         ${mainImage ? `
-          <img src="${mainImage}" alt="${item.cleanDescription}" loading="lazy" class="w-full h-full object-contain filter drop-shadow-sm group-hover/img:scale-105 transition-transform duration-200" />
+          <img src="${resolveAssetUrl(mainImage)}" alt="${item.cleanDescription}" loading="lazy" class="w-full h-full object-contain filter drop-shadow-sm group-hover/img:scale-105 transition-transform duration-200" />
         ` : `
           <div class="flex flex-col items-center justify-center text-slate-400 text-xs">
             ${Icons.camera('w-12 h-12 mb-1.5 text-slate-300')}

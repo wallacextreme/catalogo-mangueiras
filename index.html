@@ -6,16 +6,16 @@
     <title>Catálogo de Mangueiras — Localizador Visual de Caixas & Balcão</title>
     <meta name="description" content="Localizador de caixas físicas, códigos e mangueiras automotivas para balcão de autopeças" />
     <meta name="theme-color" content="#1d4ed8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="manifest" href="./manifest.webmanifest" />
   </head>
   <body class="bg-counter-bg text-counter-text dark:bg-counter-darkBg dark:text-counter-darkText transition-colors duration-150 antialiased select-text">
     <div id="app" class="min-h-screen flex flex-col"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="./src/main.ts"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
+          navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
             .then((reg) => reg.update())
             .catch(() => {});
         });

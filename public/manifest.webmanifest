@@ -1,14 +1,16 @@
 {
+  "id": "catalogo-mangueiras",
   "name": "Catálogo Interno de Balcão - Mangueiras Automotivas",
   "short_name": "Balcão Mangueiras",
   "description": "Localizador Visual de Caixas, Códigos e Mangueiras Automotivas",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#1d4ed8",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "./favicon.svg",
       "sizes": "192x192 512x512",
       "type": "image/svg+xml"
     }

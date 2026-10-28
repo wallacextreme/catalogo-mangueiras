@@ -63,7 +63,7 @@ class CatalogApp {
       }
 
       // 1. Carrega o seed estático gerado da extração dos arquivos Word de Mangueiras (com cache-buster)
-      const response = await fetch(`/data/catalog-master-seed.json?t=${Date.now()}`);
+      const response = await fetch(`./data/catalog-master-seed.json?t=${Date.now()}`);
       if (!response.ok) {
         throw new Error(`Falha ao carregar seed de catálogo: status ${response.status}`);
       }

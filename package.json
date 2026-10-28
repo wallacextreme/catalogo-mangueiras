@@ -1,5 +1,5 @@
 {
-  "name": "catalogo-balcao-miudezas",
+  "name": "catalogo-mangueiras",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -8,6 +8,7 @@
     "start": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
+    "deploy": "bun run build && bun scripts/deploy-gh-pages.ts",
     "test": "bun test",
     "tauri": "tauri"
   },

@@ -1,14 +1,18 @@
 const CACHE_NAME = 'balcao-mangueiras-v1';
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/favicon.svg'
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './favicon.svg'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      return Promise.allSettled(
+        STATIC_ASSETS.map((asset) => cache.add(asset).catch(() => {}))
+      );
+    })
   );
   self.skipWaiting();
 });
@@ -49,7 +53,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Imagens de mangueiras: Cache First
-  if (url.pathname.startsWith('/catalog-images/')) {
+  if (url.pathname.includes('/catalog-images/')) {
     event.respondWith(
       caches.open(CACHE_NAME).then((cache) =>
         cache.match(event.request).then((cachedResponse) => {
