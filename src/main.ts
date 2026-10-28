@@ -48,8 +48,22 @@ class CatalogApp {
     this.renderLoading();
 
     try {
-      // 1. Carrega o seed estático gerado da extração dos arquivos Word
-      const response = await fetch('/data/catalog-master-seed.json');
+      // Limpeza preventiva de caches legados no navegador
+      if (typeof window !== 'undefined' && 'caches' in window) {
+        try {
+          const keys = await caches.keys();
+          for (const key of keys) {
+            if (key !== 'balcao-mangueiras-v1') {
+              await caches.delete(key);
+            }
+          }
+        } catch {
+          // ignora
+        }
+      }
+
+      // 1. Carrega o seed estático gerado da extração dos arquivos Word de Mangueiras (com cache-buster)
+      const response = await fetch(`/data/catalog-master-seed.json?t=${Date.now()}`);
       if (!response.ok) {
         throw new Error(`Falha ao carregar seed de catálogo: status ${response.status}`);
       }

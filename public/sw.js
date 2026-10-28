@@ -1,10 +1,9 @@
-const CACHE_NAME = 'balcao-miudezas-v1';
+const CACHE_NAME = 'balcao-mangueiras-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
-  '/favicon.svg',
-  '/data/catalog-master-seed.json'
+  '/favicon.svg'
 ];
 
 self.addEventListener('install', (event) => {
@@ -20,6 +19,7 @@ self.addEventListener('activate', (event) => {
       Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
+            console.log('[SW] Removendo cache legado:', key);
             return caches.delete(key);
           }
         })
@@ -32,8 +32,24 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Imagens do catálogo e seed de dados: Stale-While-Revalidate / Cache First
-  if (url.pathname.startsWith('/catalog-images/') || url.pathname.startsWith('/data/')) {
+  // Seed de dados: Network First com fallback para cache
+  if (url.pathname.includes('/data/catalog-master-seed.json')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Imagens de mangueiras: Cache First
+  if (url.pathname.startsWith('/catalog-images/')) {
     event.respondWith(
       caches.open(CACHE_NAME).then((cache) =>
         cache.match(event.request).then((cachedResponse) => {
@@ -50,7 +66,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Requisições normais
+  // Outros recursos
   event.respondWith(
     caches.match(event.request).then((cached) => cached || fetch(event.request))
   );

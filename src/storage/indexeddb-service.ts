@@ -7,7 +7,7 @@
 import { CatalogItem, BackupData } from '../types/catalog';
 import { computeSHA256 } from '../media/webp-converter';
 
-const DB_NAME = 'BalcaoMiudezasDB';
+const DB_NAME = 'BalcaoMangueirasDB';
 const DB_VERSION = 1;
 
 const STORES = {
@@ -21,6 +21,15 @@ class IndexedDBService {
 
   private getDB(): Promise<IDBDatabase> {
     if (!this.dbPromise) {
+      // Limpa banco legado de miudezas se existir nesta porta
+      try {
+        if (typeof indexedDB !== 'undefined') {
+          indexedDB.deleteDatabase('BalcaoMiudezasDB');
+        }
+      } catch {
+        // Silencioso se não puder deletar
+      }
+
       this.dbPromise = new Promise((resolve, reject) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
 
@@ -57,7 +66,9 @@ class IndexedDBService {
   async syncStaticCatalogUpdates(seedProducts: CatalogItem[]): Promise<CatalogItem[]> {
     const db = await this.getDB();
     const overrides = await this.getAllFromStore<CatalogItem>(STORES.OVERRIDES);
-    const overrideMap = new Map<string, CatalogItem>(overrides.map(o => [o.id, o]));
+    const overrideMap = new Map<string, CatalogItem>(
+      overrides.filter(o => o.id.startsWith('mang_') || o.isCustom).map(o => [o.id, o])
+    );
 
     const mergedProducts: CatalogItem[] = [];
 
@@ -89,9 +100,10 @@ class IndexedDBService {
       }
     }
 
-    // Persiste no store de produtos consolidados
+    // Persiste no store de produtos consolidados (limpa resíduos anteriores)
     const tx = db.transaction(STORES.PRODUCTS, 'readwrite');
     const store = tx.objectStore(STORES.PRODUCTS);
+    store.clear();
     await new Promise<void>((resolve, reject) => {
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error);
