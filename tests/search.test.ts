@@ -2,71 +2,77 @@ import { describe, it, expect } from 'bun:test';
 import { SearchEngine, normalizeText } from '../src/search/search-engine';
 import { CatalogItem, FilterState } from '../src/types/catalog';
 
-const mockItems: CatalogItem[] = [
+const mockHoseItems: CatalogItem[] = [
   {
-    id: 'item_1',
-    catalogSource: 'doc1.docx',
-    section: 'Grampos, Presilhas, Batentes e Acabamentos',
-    boxNumber: '940',
-    internalCode: 'MU940',
-    referenceCodes: ['P-185', 'P185'],
-    description: 'GRAMPO SUPERIOR BAGAGITO C3/C4',
-    cleanDescription: 'GRAMPO SUPERIOR BAGAGITO C3/C4',
-    manufacturers: ['Peugeot/Citroën'],
-    technicalSpecs: ['8mm'],
-    images: ['/catalog-images/miudezas/img1.webp'],
-    primaryImage: '/catalog-images/miudezas/img1.webp',
+    id: 'mang_fiat_r0_left',
+    catalogSource: 'MANGUEIRAS LINHA FIAT.docx',
+    lineName: 'Linha Fiat',
+    hoseType: 'Filtro de Ar',
+    section: 'Filtro de Ar',
+    boxNumber: '384',
+    internalCode: '',
+    referenceCodes: ['21926-9', '51854599'],
+    description: '21926-9 MANGUEIRA DO FILTRO DE AR FIORINO/GRAND SIENA/PALIO/UNO/STRADA/MOBI MOTOR FIRE EVO 51854599',
+    cleanDescription: '21926-9 MANGUEIRA DO FILTRO DE AR FIORINO/GRAND SIENA/PALIO/UNO/STRADA/MOBI MOTOR FIRE EVO 51854599',
+    manufacturers: ['Fiat'],
+    technicalSpecs: ['FIRE', 'EVO'],
+    images: ['/catalog-images/mangueiras/mang_fiat_r0_left.webp'],
+    primaryImage: '/catalog-images/mangueiras/mang_fiat_r0_left.webp',
     needsDescriptionReview: false,
-    price: 15.0,
-    stockQty: 50,
-    searchTokens: ['940', 'mu940', 'p185', 'grampo', 'bagagito', 'c3', 'c4'],
+    price: 45.0,
+    stockQty: 12,
+    searchTokens: ['384', '21926-9', '219269', '51854599', 'mangueira', 'filtro', 'ar', 'palio', 'uno', 'fiat'],
     createdAt: '2026-10-28T00:00:00Z',
     updatedAt: '2026-10-28T00:00:00Z'
   },
   {
-    id: 'item_2',
-    catalogSource: 'doc2.docx',
-    section: 'Reparos de Trambulador e Câmbio',
-    boxNumber: '10309',
-    internalCode: 'MU10309',
-    referenceCodes: ['LF0437', 'D100.83'],
-    description: 'REPARO TRAMBULADOR CORSA/CELTA 5 MARCHAS',
-    cleanDescription: 'REPARO TRAMBULADOR CORSA/CELTA 5 MARCHAS',
+    id: 'mang_gm_r0_left',
+    catalogSource: 'MANGUEIRAS LINHA GM.docx',
+    lineName: 'Linha GM',
+    hoseType: 'Bocal do Tanque / Combustível',
+    section: 'Bocal do Tanque / Combustível',
+    boxNumber: '412',
+    internalCode: '',
+    referenceCodes: ['15050-0'],
+    description: '15050-0 MANGUEIRA DO BOCAL DO TANQUE DE COMBUSTÍVEL (49X135MM) OPALA/CARAVAN 90/92',
+    cleanDescription: '15050-0 MANGUEIRA DO BOCAL DO TANQUE DE COMBUSTÍVEL (49X135MM) OPALA/CARAVAN 90/92',
     manufacturers: ['GM'],
+    technicalSpecs: ['49X135MM'],
+    images: ['/catalog-images/mangueiras/mang_gm_r0_left.webp'],
+    primaryImage: '/catalog-images/mangueiras/mang_gm_r0_left.webp',
+    needsDescriptionReview: false,
+    price: 38.0,
+    stockQty: 8,
+    searchTokens: ['412', '15050-0', '150500', 'bocal', 'tanque', 'opala', 'caravan', 'gm'],
+    createdAt: '2026-10-28T00:00:00Z',
+    updatedAt: '2026-10-28T00:00:00Z'
+  },
+  {
+    id: 'mang_vw_r1_left',
+    catalogSource: 'MANGUEIRAS LINHA VOLKSWAGEN.docx',
+    lineName: 'Linha Volkswagen',
+    hoseType: 'Respiro de Óleo / Antichama',
+    section: 'Respiro de Óleo / Antichama',
+    boxNumber: '16',
+    internalCode: '',
+    referenceCodes: ['15260-3'],
+    description: '15260-3 MANGUEIRA DO RESPIRO ÓLEO BRASILIA',
+    cleanDescription: '15260-3 MANGUEIRA DO RESPIRO ÓLEO BRASILIA',
+    manufacturers: ['VW'],
     technicalSpecs: [],
-    images: ['/catalog-images/miudezas/img2.webp'],
-    primaryImage: '/catalog-images/miudezas/img2.webp',
+    images: ['/catalog-images/mangueiras/mang_vw_r1_left.webp'],
+    primaryImage: '/catalog-images/mangueiras/mang_vw_r1_left.webp',
     needsDescriptionReview: false,
-    price: 32.5,
-    stockQty: 20,
-    searchTokens: ['10309', 'mu10309', 'lf0437', 'reparo', 'trambulador', 'corsa'],
-    createdAt: '2026-10-28T00:00:00Z',
-    updatedAt: '2026-10-28T00:00:00Z'
-  },
-  {
-    id: 'item_3',
-    catalogSource: 'doc2.docx',
-    section: 'Reparos de Trambulador e Câmbio',
-    boxNumber: '1048B',
-    internalCode: 'LT-2340',
-    referenceCodes: ['JAHU 08271-9'],
-    description: 'TERMINAL DO CABO ENGATE AGILE/PRISMA',
-    cleanDescription: 'TERMINAL DO CABO ENGATE AGILE/PRISMA',
-    manufacturers: ['GM'],
-    technicalSpecs: ['M10'],
-    images: [],
-    primaryImage: null,
-    needsDescriptionReview: true,
-    price: null,
-    stockQty: null,
-    searchTokens: ['1048b', 'lt2340', 'jahu', 'terminal', 'cabo'],
+    price: 25.0,
+    stockQty: 15,
+    searchTokens: ['16', '15260-3', '152603', 'respiro', 'oleo', 'brasilia', 'vw'],
     createdAt: '2026-10-28T00:00:00Z',
     updatedAt: '2026-10-28T00:00:00Z'
   }
 ];
 
-describe('SearchEngine - Balcão de Alta Velocidade', () => {
-  const engine = new SearchEngine(mockItems);
+describe('SearchEngine - Balcão de Mangueiras Automotivas', () => {
+  const engine = new SearchEngine(mockHoseItems);
 
   const baseFilter: FilterState = {
     searchQuery: '',
@@ -78,79 +84,62 @@ describe('SearchEngine - Balcão de Alta Velocidade', () => {
     sortBy: 'box'
   };
 
-  it('deve localizar produto pelo número exato da caixa (940)', () => {
-    const results = engine.search({ ...baseFilter, searchQuery: '940' });
+  it('deve localizar mangueira pelo número exato da caixa (384)', () => {
+    const results = engine.search({ ...baseFilter, searchQuery: '384' });
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0].boxNumber).toBe('940');
+    expect(results[0].boxNumber).toBe('384');
   });
 
-  it('deve localizar produto digitando "cx 10309"', () => {
-    const results = engine.search({ ...baseFilter, searchQuery: 'cx 10309' });
+  it('deve localizar mangueira digitando "cx 412"', () => {
+    const results = engine.search({ ...baseFilter, searchQuery: 'cx 412' });
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0].boxNumber).toBe('10309');
+    expect(results[0].boxNumber).toBe('412');
   });
 
-  it('deve localizar produto com caixa alfanumérica (1048B)', () => {
-    const results = engine.search({ ...baseFilter, searchQuery: '1048b' });
-    expect(results.length).toBeGreaterThan(0);
-    expect(results[0].boxNumber).toBe('1048B');
+  it('deve localizar mangueira pelo código de referência 21926-9', () => {
+    const res = engine.search({ ...baseFilter, searchQuery: '21926-9' });
+    expect(res.length).toBeGreaterThan(0);
+    expect(res[0].referenceCodes).toContain('21926-9');
   });
 
-  it('deve localizar produto pelo código interno MU10309 e LT-2340', () => {
-    const res1 = engine.search({ ...baseFilter, searchQuery: 'MU10309' });
-    expect(res1.length).toBeGreaterThan(0);
-    expect(res1[0].internalCode).toBe('MU10309');
-
-    const res2 = engine.search({ ...baseFilter, searchQuery: 'lt2340' });
-    expect(res2.length).toBeGreaterThan(0);
-    expect(res2[0].internalCode).toBe('LT-2340');
+  it('deve localizar mangueira digitando o código OEM 51854599', () => {
+    const res = engine.search({ ...baseFilter, searchQuery: '51854599' });
+    expect(res.length).toBeGreaterThan(0);
+    expect(res[0].boxNumber).toBe('384');
   });
 
-  it('deve localizar produto pelos códigos de referência P-185 e LF0437', () => {
-    const resP = engine.search({ ...baseFilter, searchQuery: 'P-185' });
-    expect(resP.length).toBeGreaterThan(0);
-    expect(resP[0].referenceCodes).toContain('P-185');
-
-    const resLF = engine.search({ ...baseFilter, searchQuery: 'lf0437' });
-    expect(resLF.length).toBeGreaterThan(0);
-    expect(resLF[0].referenceCodes).toContain('LF0437');
+  it('deve localizar mangueira por modelo do veículo (Opala)', () => {
+    const res = engine.search({ ...baseFilter, searchQuery: 'opala' });
+    expect(res.length).toBeGreaterThan(0);
+    expect(res[0].boxNumber).toBe('412');
   });
 
-  it('deve filtrar por Categoria / Seção', () => {
-    const res = engine.search({ ...baseFilter, selectedSection: 'Reparos de Trambulador e Câmbio' });
-    expect(res.length).toBe(2);
-    expect(res.every(r => r.section === 'Reparos de Trambulador e Câmbio')).toBe(true);
+  it('deve filtrar por Seção / Tipo de Mangueira (Filtro de Ar)', () => {
+    const res = engine.search({ ...baseFilter, selectedSection: 'Filtro de Ar' });
+    expect(res.length).toBe(1);
+    expect(res[0].section).toBe('Filtro de Ar');
   });
 
   it('deve filtrar por Montadora (GM)', () => {
     const res = engine.search({ ...baseFilter, selectedManufacturer: 'GM' });
-    expect(res.length).toBe(2);
-    expect(res.every(r => r.manufacturers.includes('GM'))).toBe(true);
+    expect(res.length).toBe(1);
+    expect(res[0].boxNumber).toBe('412');
   });
 
-  it('deve filtrar por Status Visual (apenas itens com foto)', () => {
-    const res = engine.search({ ...baseFilter, visualStatus: 'with-photo' });
-    expect(res.length).toBe(2);
-    expect(res.every(r => r.primaryImage !== null)).toBe(true);
-  });
-
-  it('Quality Gate 9: benchmark de busca deve responder em < 50ms', () => {
-    // Cria 1500 itens sintéticos
+  it('Quality Gate 9: benchmark de busca de mangueiras deve responder em < 50ms', () => {
     const largeList: CatalogItem[] = [];
     for (let i = 0; i < 1500; i++) {
       largeList.push({
-        ...mockItems[i % 3],
-        id: `synth_${i}`,
+        ...mockHoseItems[i % 3],
+        id: `mang_synth_${i}`,
         boxNumber: `BOX_${i}`,
-        internalCode: `MU${i}`,
-        cleanDescription: `Peça de Teste Sintética número ${i} com especificações M${i}`
+        cleanDescription: `Mangueira Sintética de Teste ${i} do Radiador Superior`
       });
     }
 
     const perfEngine = new SearchEngine(largeList);
     const start = performance.now();
 
-    // 100 buscas consecutivas
     for (let j = 0; j < 100; j++) {
       perfEngine.search({ ...baseFilter, searchQuery: `BOX_${j * 10}` });
     }
@@ -158,7 +147,7 @@ describe('SearchEngine - Balcão de Alta Velocidade', () => {
     const elapsed = performance.now() - start;
     const avgTimeMs = elapsed / 100;
 
-    console.log(`[Gate 9 Perf] 100 buscas em 1500 itens: Média = ${avgTimeMs.toFixed(3)} ms por busca.`);
+    console.log(`[Gate 9 Mangueiras] 100 buscas em 1500 itens: Média = ${avgTimeMs.toFixed(3)} ms`);
     expect(avgTimeMs).toBeLessThan(50);
   });
 });

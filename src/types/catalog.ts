@@ -1,11 +1,13 @@
 /**
  * src/types/catalog.ts
- * Definições de tipos estritos para o Catálogo Interno de Balcão.
+ * Definições de tipos estritos para o Catálogo Interno de Mangueiras Automotivas.
  */
 
 export interface CatalogItem {
   id: string;
   catalogSource: string;
+  lineName?: string;
+  hoseType?: string;
   section: string;
   boxNumber: string;
   internalCode: string;

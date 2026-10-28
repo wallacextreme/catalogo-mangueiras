@@ -9,26 +9,23 @@ import { convertBlobToStudioWebP } from '../media/webp-converter';
 import { dbService } from '../storage/indexeddb-service';
 
 export const CATALOG_SECTIONS = [
-  'Grampos, Presilhas, Batentes e Acabamentos',
-  'Porca Rápida e Buchas de Fixação',
-  'Molas em Geral',
-  'Alças, Moldura e Kits Banco',
-  'Parafuso Fixação e Regulagem de Farol',
-  'Reparos de Trambulador e Câmbio',
-  'Castelo Vela (Tucho)',
-  'Calota Cubo Roda',
-  'Porcas Ponta Eixo / Homocinética / Amortecedor',
-  'Bujão e Anéis de Cárter e Caixa',
-  'Parafuso Suspensão / Balança / Motor',
-  'Kit Embreagem e Kits de Pedal',
-  'Bucha Caixa Direção',
-  'Conexões e Engates Rápidos',
-  'Regulagem de Freio'
+  'Radiador Superior',
+  'Radiador Inferior',
+  'Radiador (Geral)',
+  "Bomba D'Água",
+  'Filtro de Ar',
+  'Respiro de Óleo / Antichama',
+  'Aquecedor (Ar Quente)',
+  'Reservatório de Expansão',
+  'Bocal do Tanque / Combustível',
+  'Coletor de Admissão',
+  'Cavalete / Termostato',
+  'Direção Hidráulica',
+  'Outras Mangueiras'
 ];
 
 export const ALL_MANUFACTURERS = [
-  'VW', 'GM', 'Fiat', 'Ford', 'Toyota', 'Honda', 'Renault',
-  'Peugeot/Citroën', 'Hyundai', 'Mitsubishi', 'Nissan', 'Universal'
+  'Fiat', 'Ford', 'GM', 'VW', 'Hyundai', 'Toyota', 'Renault', 'Peugeot/Citroën', 'Universal'
 ];
 
 export class ProductFormModal {

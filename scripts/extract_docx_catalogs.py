@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 scripts/extract_docx_catalogs.py
-Engenharia Reversa dos Catálogos Word (.docx) para o Catálogo Interno de Balcão.
-Extrai produtos, seções, caixas, códigos internos, códigos de referência, montadoras,
+Engenharia Reversa dos Catálogos Word (.docx) de MANGUEIRAS AUTOMOTIVAS para o Balcão.
+Extrai produtos, seções, caixas, códigos internos, referências, montadoras,
 especificações e converte 100% das imagens para WebP com fundo branco (#FFFFFF).
 """
 
@@ -25,307 +25,213 @@ V_NS = "urn:schemas-microsoft-com:vml"
 
 DOCS_CONFIG = [
     {
-        "filename": "GRAMPOS,PRESILHAS,BATENTES E ACABAMENTOS...docx",
-        "doc_key": "doc1",
-        "table_sections": [
-            "Grampos, Presilhas, Batentes e Acabamentos",
-            "Porca Rápida e Buchas de Fixação",
-            "Molas em Geral",
-            "Alças, Moldura e Kits Banco",
-            "Parafuso Fixação e Regulagem de Farol"
-        ]
+        "filename": "MANGUEIRAS LINHA FIAT.docx",
+        "doc_key": "fiat",
+        "default_mfr": "Fiat",
+        "line_name": "Linha Fiat"
     },
     {
-        "filename": "PEÇAS (MIUDEZAS) CATALOGO 2.docx",
-        "doc_key": "doc2",
-        "table_sections": [
-            "Reparos de Trambulador e Câmbio",
-            "Castelo Vela (Tucho)",
-            "Calota Cubo Roda",
-            "Porcas Ponta Eixo / Homocinética / Amortecedor",
-            "Bujão e Anéis de Cárter e Caixa",
-            "Parafuso Suspensão / Balança / Motor",
-            "Kit Embreagem e Kits de Pedal",
-            "Bucha Caixa Direção",
-            "Conexões e Engates Rápidos",
-            "Regulagem de Freio"
-        ]
+        "filename": "MANGUEIRAS LINHA FORD.docx",
+        "doc_key": "ford",
+        "default_mfr": "Ford",
+        "line_name": "Linha Ford"
+    },
+    {
+        "filename": "MANGUEIRAS LINHA GM.docx",
+        "doc_key": "gm",
+        "default_mfr": "GM",
+        "line_name": "Linha GM"
+    },
+    {
+        "filename": "MANGUEIRAS LINHA IMPORTADOS.docx",
+        "doc_key": "importados",
+        "default_mfr": "Hyundai",
+        "line_name": "Linha Importados"
+    },
+    {
+        "filename": "MANGUEIRAS LINHA VOLKSWAGEN.docx",
+        "doc_key": "vw",
+        "default_mfr": "VW",
+        "line_name": "Linha Volkswagen"
     }
 ]
 
-# Regex para descolar códigos de referência grudados na descrição
-RE_GLUED_P = re.compile(
-    r'^(P-?\d{1,5}[A-Z]?)(PRESILHA|GRAMPO|PORCA|BUCHA|TRAVA|FIXADOR|CALOTA|ANEL|MOLA|PARAFUSO|REPARO|KIT|CONEXAO|CONECTOR|DISCO|CLIP|TAMPA|TUCHO|BORRACHA|MANGUEIRA|VALVULA|HASTE|TERMINAL|ALAVANCA|GARFO|SAPATA|SAPATAO|CANO|FLANGE|GUIA|LATERAL|FRISO|PAINEL|REVESTIMENTO|VARETA|PORTA|ISOLAMENTO)',
-    re.IGNORECASE
-)
-RE_GLUED_LF = re.compile(
-    r'^(LF-?\d{2,5}[A-Z]?(-[A-Z0-9]+)?)(PRESILHA|GRAMPO|PORCA|BUCHA|TRAVA|FIXADOR|CALOTA|ANEL|MOLA|PARAFUSO|REPARO|KIT|CONEXAO|CONECTOR|DISCO|CLIP|TAMPA|TUCHO|BORRACHA|MANGUEIRA|VALVULA|HASTE|TERMINAL|ALAVANCA|GARFO|SAPATA|CANO|FLANGE|GUIA)',
-    re.IGNORECASE
-)
-RE_GLUED_T = re.compile(
-    r'^(T-?\d{1,3}[A-Z]?)(PRESILHA|GRAMPO|PORCA|BUCHA|TRAVA|FIXADOR|DISCO|CLIP)',
-    re.IGNORECASE
-)
-RE_GLUED_K = re.compile(
-    r'^(K-?\d{1,3}[A-Z]?)(KIT|MOLA|BANCO)',
-    re.IGNORECASE
-)
+# Categorias / Tipos de Mangueiras
+def classify_hose_type(desc: str) -> str:
+    d = desc.upper()
+    if 'RADIADOR' in d and ('SUP' in d or 'SUPERIOR' in d):
+        return 'Radiador Superior'
+    if 'RADIADOR' in d and ('INF' in d or 'INFERIOR' in d):
+        return 'Radiador Inferior'
+    if 'RADIADOR' in d:
+        return 'Radiador (Geral)'
+    if 'FILTRO DE AR' in d or 'FILTRO AR' in d:
+        return 'Filtro de Ar'
+    if "BOMBA D'" in d or "BOMBA D '" in d or 'BOMBA DAGUA' in d or 'BOMBA D ÁGUA' in d or "BOMBA D´" in d:
+        return "Bomba D'Água"
+    if 'RESPIRO' in d or 'ANTICHAMA' in d or 'ANTI CHAMA' in d or 'ANTI-CHAMA' in d:
+        return 'Respiro de Óleo / Antichama'
+    if 'AQUECEDOR' in d or 'AR QUENTE' in d:
+        return 'Aquecedor (Ar Quente)'
+    if 'RESERVAT' in d:
+        return 'Reservatório de Expansão'
+    if 'BOCAL' in d or 'TANQUE' in d:
+        return 'Bocal do Tanque / Combustível'
+    if 'COLETOR' in d:
+        return 'Coletor de Admissão'
+    if 'CAVALETE' in d or 'TUBO AGUA' in d or "TUBO D'AGUA" in d or 'TERMOSTAT' in d:
+        return "Cavalete / Termostato"
+    if 'DIREÇÃO' in d or 'DIRECAO' in d:
+        return 'Direção Hidráulica'
+    return 'Outras Mangueiras'
 
-# Regex para captura geral de códigos de referência
+# Regex para descolar códigos no início
+RE_GLUED_CODE = re.compile(r'^(\d{4,6}-\d|\d{4,6}|LF\d{3,5}(-\d{4,6}-\d)?)\s*(MANGUEIRA|MANG\.?|TUBO)', re.IGNORECASE)
+
+# Regex para extração de referências
 RE_REF_CODES = [
-    re.compile(r'\b(P-?\d{1,5}[A-Z]?)\b', re.IGNORECASE),
-    re.compile(r'\b(LF-?\d{2,5}[A-Z]?(-[A-Z0-9]+)?)\b', re.IGNORECASE),
-    re.compile(r'\b(LT-?\d{2,5}[A-Z]?)\b', re.IGNORECASE),
-    re.compile(r'\b(LTC-?\d{2,5}[A-Z]?)\b', re.IGNORECASE),
-    re.compile(r'\b(D[1-6]00\.\d{1,4})\b', re.IGNORECASE),
-    re.compile(r'\bJAHU\s*(\d{4,6}(-\d)?)\b', re.IGNORECASE),
-    re.compile(r'\bCORCERAMA\s*(\d{4,6})\b', re.IGNORECASE),
-    re.compile(r'\bKIT&CIA\s*(\d{4,6})\b', re.IGNORECASE),
-    re.compile(r'\b(EMO-\d{4,6})\b', re.IGNORECASE),
-    re.compile(r'\b(KPA\d{4,8})\b', re.IGNORECASE),
-    re.compile(r'\b(K-?\d{1,3}[A-Z]?)\b', re.IGNORECASE),
+    re.compile(r'\b(\d{4,6}-\d)\b'),
+    re.compile(r'\b(LF\d{3,5})\b', re.IGNORECASE),
     re.compile(r'\b(T-?\d{1,3}[A-Z]?)\b', re.IGNORECASE),
-    re.compile(r'\b(AP-?\d{1,4})\b', re.IGNORECASE),
-    re.compile(r'\b(VW-?\d{2,5}[A-Z]?)\b', re.IGNORECASE),
-    re.compile(r'\b(FD-?\d{2,5}[A-Z]?)\b', re.IGNORECASE),
-    re.compile(r'\b(FT-?\d{2,5}[A-Z]?)\b', re.IGNORECASE),
-    re.compile(r'\b(GM-?\d{2,5}[A-Z]?)\b', re.IGNORECASE),
-    re.compile(r'\b(QC-?\d{2,5}[A-Z]?)\b', re.IGNORECASE),
-    re.compile(r'\b(QCW-?\d{2,5}[A-Z]?)\b', re.IGNORECASE),
-    re.compile(r'\b(GMG\d{2,5})\b', re.IGNORECASE),
-    re.compile(r'\b(DC\d{2,5})\b', re.IGNORECASE),
-    re.compile(r'\b(DV-\d{3,6})\b', re.IGNORECASE),
-    re.compile(r'\b(ETE\d{3,5})\b', re.IGNORECASE),
-    re.compile(r'\b(IN\d{3,5})\b', re.IGNORECASE),
-    re.compile(r'\b(PR\d{3,5})\b', re.IGNORECASE),
-    # Códigos OEM (ex.: XS6171586AA, 013.141.719.2, 307.419.063-5, 100164475)
-    re.compile(r'\b([A-Z]{2,3}\d{6,8}[A-Z]{0,3})\b'),
+    re.compile(r'\b(\d{7,10})\b'), # códigos OEM como 51854599, 51851014
+    re.compile(r'\b([A-Z]{2,3}\d{6,8}[A-Z]{0,3})\b'), # XS6171586AA
     re.compile(r'\b(\d{3}\.\d{3}\.\d{3}(\.\d)?)\b'),
-    re.compile(r'\b(\d{3}\.\d{3}\.\d{3}-\d)\b'),
-    re.compile(r'\b(\d{5,8})\b'),
 ]
 
-# Montadoras
 MANUFACTURER_MAP = {
-    "VW": [
-        "VW", "VOLKS", "VOLKSWAGEN", "VOLWAGEM", "GOL", "PARATI", "SAVEIRO", "VOYAGE",
-        "SANTANA", "FOX", "UP", "GOLF", "POLO", "JETTA", "PASSAT", "KOMBI", "FUSCA",
-        "BORA", "CROSSFOX", "SPACEFOX", "TIGUAN", "AMAROK", "VERSAILLES", "POINTER", "LOGUS"
-    ],
-    "GM": [
-        "GM", "CHEVROLET", "CHEVETTE", "CORSA", "CELTA", "ONIX", "PRISMA", "COBALT",
-        "SPIN", "CRUZE", "ASTRA", "VECTRA", "KADETT", "MONZA", "S10", "BLAZER",
-        "SILVERADO", "OPALA", "CARAVAN", "MONTANA", "MERIVA", "ZAFIRA", "AGILE", "TRACKER", "OMEGA"
-    ],
-    "Fiat": [
-        "FIAT", "FT", "UNO", "PALIO", "SIENA", "STRADA", "MOBI", "ARGO", "CRONOS",
-        "TORO", "DUCATO", "PUNTO", "LINEA", "TEMPRA", "TIPO", "DOBLO", "FIORINO",
-        "IDEA", "BRAVO", "MAREA", "ELBA", "PREMIO", "147", "OGGI"
-    ],
-    "Ford": [
-        "FORD", "FD", "FIESTA", "KA", "ECOSPORT", "FOCUS", "ESCORT", "VERONA",
-        "CORCEL", "DEL REY", "DELREY", "PAMPA", "RANGER", "F1000", "COURIER",
-        "ROYALE", "TAUNUS", "F250", "BELINA", "HOBBY"
-    ],
-    "Toyota": ["TOYOTA", "COROLLA", "ETIOS", "YARIS", "HILUX", "SW4", "RAV4"],
-    "Honda": ["HONDA", "CIVIC", "FIT", "CITY", "HRV", "CRV", "WRV", "ACCORD"],
-    "Renault": ["RENAULT", "CLIO", "SANDERO", "LOGAN", "DUSTER", "KWID", "MEGANE", "SCENIC", "MASTER", "CAPTUR", "OROCH"],
-    "Peugeot/Citroën": [
-        "PEUGEOT", "CITROEN", "CITROËN", "206", "207", "208", "307", "308", "C3",
-        "C4", "AIRCROSS", "XSARA", "PICASSO", "BERLINGO", "PARTNER", "CACTUS", "LOUNGE"
-    ],
-    "Hyundai": ["HYUNDAI", "HINDAY", "HB20", "CRETA", "TUCSON", "I30", "ELANTRA", "AZERA", "AZERRA", "SONATA", "SANTA FE", "IX35", "HR"],
-    "Mitsubishi": ["MITSUBISHI", "L200", "PAJERO", "ASX", "LANCER", "OUTLANDER"],
-    "Nissan": ["NISSAN", "MARCH", "VERSA", "KICKS", "FRONTIER", "SENTRA", "TIIDA", "LIVINA"]
+    "VW": ["VW", "VOLKS", "VOLKSWAGEN", "GOL", "PARATI", "SAVEIRO", "VOYAGE", "SANTANA", "FOX", "UP", "GOLF", "POLO", "JETTA", "PASSAT", "KOMBI", "FUSCA", "BRASILIA"],
+    "GM": ["GM", "CHEVROLET", "CHEVETTE", "CORSA", "CELTA", "ONIX", "PRISMA", "COBALT", "SPIN", "CRUZE", "ASTRA", "VECTRA", "KADETT", "MONZA", "S10", "BLAZER", "OPALA", "CARAVAN", "MONTANA", "MERIVA", "ZAFIRA", "AGILE", "C-10", "A-10", "D-20"],
+    "Fiat": ["FIAT", "UNO", "PALIO", "SIENA", "GRAND SIENA", "STRADA", "MOBI", "ARGO", "CRONOS", "TORO", "DUCATO", "PUNTO", "LINEA", "TEMPRA", "TIPO", "DOBLO", "FIORINO", "IDEA", "BRAVO", "MAREA", "147", "SPAZIO", "OGGI", "PANORAMA"],
+    "Ford": ["FORD", "FIESTA", "KA", "ECOSPORT", "FOCUS", "ESCORT", "VERONA", "CORCEL", "DEL REY", "DELREY", "PAMPA", "RANGER", "F1000", "COURIER", "ROYALE", "BELINA", "HOBBY", "VERSAILLES"],
+    "Hyundai": ["HYUNDAI", "HB20", "CRETA", "TUCSON", "I30", "ELANTRA", "AZERA", "SANTA FE"],
+    "Peugeot/Citroën": ["PEUGEOT", "CITROEN", "CITROËN", "206", "207", "208", "C3", "C4", "XSARA", "PICASSO", "AIRCROSS"],
+    "Toyota": ["TOYOTA", "COROLLA", "ETIOS", "YARIS", "HILUX"],
+    "Renault": ["RENAULT", "CLIO", "SANDERO", "LOGAN", "DUSTER", "KWID"]
 }
 
 def clean_box_and_code(raw_lines: list[str]) -> tuple[str, str]:
-    """
-    Separa e higieniza boxNumber e internalCode a partir das linhas ou texto bruto da célula de caixa.
-    """
     if not raw_lines:
         return "", ""
-
-    # Junta linhas e limpa espaços
     lines = [l.strip() for l in raw_lines if l.strip()]
     if not lines:
         return "", ""
 
-    box_number = ""
+    box_number = lines[0].strip()
     internal_code = ""
 
-    if len(lines) == 1:
-        text = lines[0]
-        # Casos explícitos com códigos conhecidos colados: ex '392MU392', '10309MU10309', '1048BLT-2340', '121FT1380'
-        m = re.match(r'^(\d+[A-Z]?)(MU\d+.*|COR\d+.*|LT-?\d+.*|LF\d+.*|FT\d+.*|AJ\d+.*)$', text, re.IGNORECASE)
-        if m:
-            box_number = m.group(1).strip()
-            internal_code = m.group(2).strip()
-        else:
-            # Caso com espaço interno (ex: "392 MU392" ou "121 FT1380" ou "39 22839")
-            parts = text.split()
-            if len(parts) >= 2 and any(parts[1].upper().startswith(pfx) for pfx in ("MU", "COR", "LT", "LF", "FT", "AJ", "228")):
-                box_number = parts[0].strip()
-                internal_code = " ".join(parts[1:]).strip()
-            else:
-                # Apenas 1 valor (ex: "940", "10309", "916AGR", "570GR", "824C", "1060A")
-                box_number = text.strip()
-    else:
-        # 2 ou mais linhas
-        box_number = lines[0].strip()
+    if len(lines) > 1:
         internal_code = lines[1].strip()
+    else:
+        # Se contiver espaço interno
+        parts = box_number.split()
+        if len(parts) >= 2 and any(parts[1].upper().startswith(pfx) for pfx in ("MU", "LT", "LF", "FT")):
+            box_number = parts[0].strip()
+            internal_code = parts[1].strip()
 
-    # Higienização de prefixos "Cx.", "Caixa", etc.
+    # Limpeza de prefixos
     box_number = re.sub(r'^(CX\.?|CAIXA)\s*', '', box_number, flags=re.IGNORECASE).strip()
-
-    # Normalização de códigos internos padrão
-    if internal_code:
-        # Se for código interno com espaço (ex: 'MU 392' -> 'MU392')
-        internal_code = re.sub(r'^(MU|COR|LT|LF|FT|AJ)\s+', r'\1', internal_code, flags=re.IGNORECASE)
-
     return box_number, internal_code
 
 def sanitize_description_and_refs(desc_raw: str) -> tuple[str, list[str]]:
-    """
-    Desgruda códigos de referência colados no início da descrição
-    e extrai todos os códigos de referência e fabricante.
-    """
     if not desc_raw:
         return "", []
 
     text = " ".join(desc_raw.split()).strip()
 
-    # 1. Desgrudar códigos colados no início
-    for regex in [RE_GLUED_P, RE_GLUED_LF, RE_GLUED_T, RE_GLUED_K]:
-        m = regex.match(text)
-        if m:
-            code = m.group(1).strip()
-            # Formatação canônica se for Pxxx (ex: P111 -> P-111)
-            if re.match(r'^P\d', code, re.IGNORECASE):
-                canonical_code = f"P-{code[1:]}"
-            else:
-                canonical_code = code
+    # Desgrudar código inicial
+    m = RE_GLUED_CODE.match(text)
+    if m:
+        code = m.group(1).strip()
+        word = m.group(3).strip()
+        rest = text[m.end():].strip()
+        text = f"{code} {word} {rest}".strip()
 
-            rest = text[m.end(1):].strip()
-            text = f"{canonical_code} {rest}"
-            break
-
-    # 2. Extrair códigos de referência
-    found_refs = []
-    for regex in RE_REF_CODES:
-        for match in regex.finditer(text):
+    # Extrair códigos
+    refs = []
+    for reg in RE_REF_CODES:
+        for match in reg.finditer(text):
             val = match.group(0).strip()
-            # Normalização de código P
-            if re.match(r'^P\d{1,5}[A-Z]?$', val, re.IGNORECASE):
-                val = f"P-{val[1:]}"
-            if val and val.upper() not in [r.upper() for r in found_refs]:
-                found_refs.append(val)
+            if val and val.upper() not in [r.upper() for r in refs]:
+                refs.append(val)
 
-    return text, found_refs
+    return text, refs
 
-def detect_manufacturers(text: str) -> list[str]:
-    """Identifica montadoras e modelos citados na descrição."""
-    if not text:
-        return ["Universal"]
-
+def detect_manufacturers(text: str, default_mfr: str) -> list[str]:
     found = []
-    # Separa barras, traços e pontos para não colar palavras (ex: C3/C4 -> C3 C4)
-    normalized = re.sub(r'[/_\-\.]', ' ', text).upper()
-    tokens = set(re.findall(r'\b[A-Z0-9]+\b', normalized))
+    norm = re.sub(r'[/_\-\.]', ' ', text).upper()
+    tokens = set(re.findall(r'\b[A-Z0-9]+\b', norm))
 
     for mfr, keywords in MANUFACTURER_MAP.items():
         for kw in keywords:
-            if kw in tokens or f" {kw} " in f" {normalized} ":
+            if kw in tokens or f" {kw} " in f" {norm} ":
                 if mfr not in found:
                     found.append(mfr)
                 break
 
-    if not found or "UNIVERSAL" in normalized:
-        if "Universal" not in found:
-            found.append("Universal")
+    if default_mfr and default_mfr not in found:
+        found.insert(0, default_mfr)
+
+    if not found:
+        found.append("Universal")
 
     return found
 
 def extract_technical_specs(text: str) -> list[str]:
-    """Extrai medidas e especificações técnicas."""
-    if not text:
-        return []
-
     specs = []
-    # Medidas como 12X19X9X0,60MM, M20X1,50X43, 5/16" x 5/16", 8mm, 90°
     patterns = [
         re.compile(r'\b\d+([,\.]\d+)?\s*(MM|CM)\b', re.IGNORECASE),
-        re.compile(r'\b\d+(X\d+)+([,\.]\d+)?\s*(MM)?\b', re.IGNORECASE),
-        re.compile(r'\bM\d+X\d+([,\.]\d+)?(X\d+)?\b', re.IGNORECASE),
+        re.compile(r'\b\d+X\d+([,\.]\d+)?\s*(MM)?\b', re.IGNORECASE),
         re.compile(r'\b\d+/\d+("|\'\'|\s*POLEGADAS?)?\b', re.IGNORECASE),
-        re.compile(r'\b\d+°\b'),
-        re.compile(r'PINO:\s*[\d,\.]+', re.IGNORECASE),
-        re.compile(r'CORPO:\s*[\d,\.]+', re.IGNORECASE),
-        re.compile(r'CABEÇA:\s*[\d,\.]+', re.IGNORECASE),
+        re.compile(r'\b\d+\s*MARCHAS\b', re.IGNORECASE),
+        re.compile(r'\b(C/ACD|S/ACD|C/AR|S/AR|C/MOLA|S/MOLA)\b', re.IGNORECASE),
+        re.compile(r'\b(1\.0|1\.4|1\.5|1\.6|1\.8|2\.0|2\.2|2\.4|6C)\b', re.IGNORECASE),
+        re.compile(r'\b(8V|16V|FLEX|FIRE|EVO|AP|AT)\b', re.IGNORECASE),
     ]
-
     for p in patterns:
-        for match in p.finditer(text):
-            val = match.group(0).strip()
-            if val and val not in specs:
-                specs.append(val)
-
+        for m in p.finditer(text):
+            v = m.group(0).strip()
+            if v and v not in specs:
+                specs.append(v)
     return specs
 
 def build_search_tokens(item: dict) -> list[str]:
-    """Gera tokens de busca abrangentes para resposta < 50ms."""
     tokens = set()
-
-    def add_tokens(s: str):
-        if not s:
-            return
-        # Divide por pontuações e espaços
+    def add(s: str):
+        if not s: return
         cleaned = re.sub(r'[^a-zA-Z0-9áéíóúâêîôûãõçÁÉÍÓÚÂÊÎÔÛÃÕÇ]', ' ', s.lower())
         for t in cleaned.split():
-            if len(t) >= 1:
-                tokens.add(t)
+            if len(t) >= 1: tokens.add(t)
 
-    # Caixa e prefixos de caixa
     if item.get("boxNumber"):
         bn = item["boxNumber"].lower()
         tokens.add(bn)
         tokens.add(f"cx{bn}")
         tokens.add(f"cx {bn}")
         tokens.add(f"caixa {bn}")
-        add_tokens(item["boxNumber"])
+        add(item["boxNumber"])
 
-    # Código Interno
     if item.get("internalCode"):
-        ic = item["internalCode"].lower()
-        tokens.add(ic)
-        # Se tem traço, adiciona sem traço
-        tokens.add(ic.replace("-", ""))
-        add_tokens(item["internalCode"])
+        tokens.add(item["internalCode"].lower())
+        add(item["internalCode"])
 
-    # Códigos de Referência
     for r in item.get("referenceCodes", []):
         rc = r.lower()
         tokens.add(rc)
         tokens.add(rc.replace("-", "").replace(".", ""))
-        add_tokens(r)
+        add(r)
 
-    # Descrição e Seção
-    add_tokens(item.get("description", ""))
-    add_tokens(item.get("section", ""))
+    add(item.get("description", ""))
+    add(item.get("section", ""))
+    add(item.get("hoseType", ""))
+    add(item.get("lineName", ""))
 
-    # Montadoras
-    for mfr in item.get("manufacturers", []):
-        add_tokens(mfr)
-
-    # Especificações técnicas
-    for spec in item.get("technicalSpecs", []):
-        add_tokens(spec)
+    for m in item.get("manufacturers", []): add(m)
+    for s in item.get("technicalSpecs", []): add(s)
 
     return sorted(list(tokens))
 
 def extract_docx_catalogs():
-    """Processa todos os documentos e extrai imagens e produtos."""
-    output_img_dir = os.path.join("public", "catalog-images", "miudezas")
+    output_img_dir = os.path.join("public", "catalog-images", "mangueiras")
     os.makedirs(output_img_dir, exist_ok=True)
     os.makedirs(os.path.join("public", "data"), exist_ok=True)
 
@@ -336,20 +242,22 @@ def extract_docx_catalogs():
         "total_images": 0,
         "black_pixels": 0,
         "pixel_failures": 0,
-        "sections": {}
+        "sections": {},
+        "lines": {}
     }
 
     for doc_cfg in DOCS_CONFIG:
         doc_filename = doc_cfg["filename"]
         doc_key = doc_cfg["doc_key"]
-        sections = doc_cfg["table_sections"]
+        default_mfr = doc_cfg["default_mfr"]
+        line_name = doc_cfg["line_name"]
 
         print(f"\n=======================================================")
         print(f"Iniciando extração do catálogo: {doc_filename}")
         print(f"=======================================================")
 
         if not os.path.exists(doc_filename):
-            print(f"ERRO: Arquivo {doc_filename} não encontrado no diretório atual!")
+            print(f"ERRO: Arquivo {doc_filename} não encontrado!")
             continue
 
         doc_stats = {
@@ -360,128 +268,102 @@ def extract_docx_catalogs():
         }
 
         with zipfile.ZipFile(doc_filename) as z:
-            # Carrega relacionamentos do documento Word
             rels_xml = z.read("word/_rels/document.xml.rels")
             rels_root = ET.fromstring(rels_xml)
             rel_map = {r.attrib["Id"]: r.attrib["Target"] for r in rels_root}
 
-            # Carrega o XML principal
             doc_xml = z.read("word/document.xml")
             doc_root = ET.fromstring(doc_xml)
 
             tables = doc_root.findall(f".//{W_NS}tbl")
-            print(f"Total de tabelas identificadas: {len(tables)} (esperado: {len(sections)})")
+            print(f"Tabelas no documento: {len(tables)}")
 
             for tbl_idx, tbl in enumerate(tables):
-                section_name = sections[tbl_idx] if tbl_idx < len(sections) else f"Seção Geral {tbl_idx + 1}"
-                print(f"\n-> Processando Tabela {tbl_idx}: '{section_name}'...")
-                tbl_item_count = 0
-
                 rows = tbl.findall(f"{W_NS}tr")
                 for row_idx, row in enumerate(rows):
-                    # Pula cabeçalhos da primeira linha
-                    if row_idx == 0:
-                        continue
-
                     cells = row.findall(f"{W_NS}tc")
                     if len(cells) < 6:
                         continue
 
-                    # Slots: Esquerdo (0, 1, 2) e Direito (3, 4, 5)
                     slots = [
                         ("left", cells[0], cells[1], cells[2]),
                         ("right", cells[3], cells[4], cells[5])
                     ]
 
                     for side, img_cell, desc_cell, box_cell in slots:
-                        # 1. Coleta texto da caixa
                         box_lines = [
-                            line.strip()
+                            l.strip()
                             for p in box_cell.findall(f"{W_NS}p")
-                            for line in "".join(p.itertext()).splitlines()
-                            if line.strip()
+                            for l in "".join(p.itertext()).splitlines()
+                            if l.strip()
                         ]
                         box_raw = " ".join(box_lines).strip()
 
-                        # 2. Coleta texto da descrição
                         desc_lines = [
-                            line.strip()
+                            l.strip()
                             for p in desc_cell.findall(f"{W_NS}p")
-                            for line in "".join(p.itertext()).splitlines()
-                            if line.strip()
+                            for l in "".join(p.itertext()).splitlines()
+                            if l.strip()
                         ]
                         desc_raw = " ".join(desc_lines).strip()
 
-                        # Ignora repetições de cabeçalho
+                        # Pula cabeçalho se houver
                         if desc_raw.upper() in ["DESCRIÇÃO", "DESCRIÇAO", "DESCRICAO"] or box_raw.upper() == "CAIXA":
                             continue
 
-                        # 3. Localiza imagens na célula de imagem
+                        # Imagens
                         image_targets = []
                         for blip in img_cell.findall(f".//{A_NS}blip"):
                             rid = blip.attrib.get(f"{R_NS}embed")
                             if rid and rid in rel_map:
-                                target = rel_map[rid]
-                                if not target.startswith("media/"):
-                                    target = os.path.basename(target)
-                                    target = f"media/{target}"
-                                image_targets.append(target)
+                                t = rel_map[rid]
+                                if not t.startswith("media/"): t = f"media/{os.path.basename(t)}"
+                                image_targets.append(t)
 
                         for vml in img_cell.iter():
                             tag = vml.tag.split("}")[-1]
                             if tag == "imagedata":
                                 for k, v in vml.attrib.items():
                                     if "id" in k.lower() and v in rel_map:
-                                        target = rel_map[v]
-                                        if not target.startswith("media/"):
-                                            target = os.path.basename(target)
-                                            target = f"media/{target}"
-                                        image_targets.append(target)
+                                        t = rel_map[v]
+                                        if not t.startswith("media/"): t = f"media/{os.path.basename(t)}"
+                                        image_targets.append(t)
 
                         has_img = len(image_targets) > 0
                         has_box = len(box_raw) > 0
                         has_desc = len(desc_raw) > 0
 
-                        # Se não tem imagem, nem caixa, nem descrição, é slot vazio
                         if not has_img and not has_box and not has_desc:
                             continue
 
-                        # Gera ID único 100% lowercase
-                        item_id = f"miud_{doc_key}_t{tbl_idx}_r{row_idx}_{side}".lower()
-
-                        # Separa Caixa e Código Interno
+                        item_id = f"mang_{doc_key}_r{row_idx}_{side}".lower()
                         box_number, internal_code = clean_box_and_code(box_lines)
-
-                        # Higieniza descrição e extrai códigos de referência
                         clean_desc, ref_codes = sanitize_description_and_refs(desc_raw)
 
-                        # Trata itens visuais (Foto + Caixa sem descrição)
+                        hose_type = classify_hose_type(clean_desc)
+                        section_name = f"{line_name} — {hose_type}"
+
                         needs_review = False
                         if not clean_desc:
                             needs_review = True
-                            if box_number:
-                                clean_desc = f"[Identificação Visual] {section_name} — Caixa {box_number}"
-                            else:
-                                clean_desc = f"[Identificação Visual] {section_name}"
+                            clean_desc = f"[Identificação Visual] Mangueira {line_name} — Caixa {box_number}".strip()
 
-                        # Extrai montadoras e medidas técnicas
-                        manufacturers = detect_manufacturers(clean_desc)
+                        manufacturers = detect_manufacturers(clean_desc, default_mfr)
                         technical_specs = extract_technical_specs(clean_desc)
 
-                        # Processa e converte imagens para WebP
+                        # Processa imagem
                         converted_images = []
                         for img_idx, target_path in enumerate(image_targets):
                             zip_img_path = f"word/{target_path}"
                             try:
                                 img_bytes = z.read(zip_img_path)
-                                # Nome 100% lowercase
                                 if len(image_targets) == 1:
                                     img_filename = f"{item_id}.webp"
                                 else:
                                     img_filename = f"{item_id}_ang{img_idx + 1}.webp"
 
                                 disk_output_path = os.path.join(output_img_dir, img_filename)
-                                web_path = f"/catalog-images/miudezas/{img_filename}".lower()
+                                web_path = f"/catalog-images/mangueiras/{img_filename}".lower()
 
                                 if os.path.exists(disk_output_path) and os.path.getsize(disk_output_path) > 0:
                                     converted_images.append(web_path)
@@ -495,18 +377,18 @@ def extract_docx_catalogs():
                                             stats["black_pixels"] += 1
                                     else:
                                         stats["pixel_failures"] += 1
-                                        print(f"  ALERTA: Falha na conversão da imagem {zip_img_path}: {conv_res.get('error')}")
-
+                                        print(f"  ALERTA: Falha na imagem {zip_img_path}: {conv_res.get('error')}")
                             except KeyError:
-                                print(f"  ALERTA: Imagem {zip_img_path} não encontrada no arquivo ZIP!")
+                                print(f"  ALERTA: {zip_img_path} não encontrada no ZIP!")
 
-                        # Constrói o objeto do produto
                         primary_img = converted_images[0] if converted_images else None
 
                         product = {
                             "id": item_id,
                             "catalogSource": doc_filename,
-                            "section": section_name,
+                            "lineName": line_name,
+                            "hoseType": hose_type,
+                            "section": hose_type,
                             "boxNumber": box_number,
                             "internalCode": internal_code,
                             "referenceCodes": ref_codes,
@@ -526,25 +408,20 @@ def extract_docx_catalogs():
                         product["searchTokens"] = build_search_tokens(product)
                         master_products.append(product)
 
-                        # Atualiza estatísticas
-                        tbl_item_count += 1
                         doc_stats["total_items"] += 1
-                        if converted_images:
-                            doc_stats["with_images"] += 1
-                        if needs_review:
-                            doc_stats["visual_only"] += 1
-                        if box_number:
-                            doc_stats["with_box"] += 1
+                        if converted_images: doc_stats["with_images"] += 1
+                        if needs_review: doc_stats["visual_only"] += 1
+                        if box_number: doc_stats["with_box"] += 1
 
-                        stats["sections"][section_name] = stats["sections"].get(section_name, 0) + 1
+                        stats["sections"][hose_type] = stats["sections"].get(hose_type, 0) + 1
+                        stats["lines"][line_name] = stats["lines"].get(line_name, 0) + 1
 
-                print(f"  -> Concluído: {tbl_item_count} itens extraídos na seção '{section_name}'.")
+                print(f"-> Extraídos {doc_stats['total_items']} produtos de {doc_filename}")
 
         stats["docs"][doc_filename] = doc_stats
 
     stats["total_products"] = len(master_products)
 
-    # Salva o arquivo de seed mestre JSON
     seed_path = os.path.join("public", "data", "catalog-master-seed.json")
     with open(seed_path, "w", encoding="utf-8") as f:
         json.dump(master_products, f, ensure_ascii=False, indent=2)
@@ -554,12 +431,12 @@ def extract_docx_catalogs():
         json.dump(stats, f, ensure_ascii=False, indent=2)
 
     print("\n=======================================================")
-    print("EXTRAÇÃO CONCLUÍDA COM SUCESSO ABSOLUTO!")
-    print(f"Total de Produtos Gerados: {stats['total_products']}")
+    print("EXTRAÇÃO DE MANGUEIRAS CONCLUÍDA COM SUCESSO!")
+    print(f"Total de Mangueiras Geradas: {stats['total_products']}")
     print(f"Total de Imagens WebP Convertidas: {stats['total_images']}")
-    print(f"Imagens Pretas Auditadas: {stats['black_pixels']} (ZERO falhas)")
-    print(f"Falhas de Pixel Auditadas: {stats['pixel_failures']} (ZERO falhas)")
-    print(f"Arquivo Seed Salvo em: {seed_path}")
+    print(f"Imagens Pretas Auditadas: {stats['black_pixels']} (ZERO)")
+    print(f"Falhas de Pixel: {stats['pixel_failures']} (ZERO)")
+    print(f"Seed Salvo em: {seed_path}")
     print("=======================================================\n")
 
     return stats

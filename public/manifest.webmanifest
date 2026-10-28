@@ -1,7 +1,7 @@
 {
-  "name": "Catálogo Interno de Balcão - Miudezas",
-  "short_name": "Balcão Peças",
-  "description": "Localizador Visual de Caixas, Códigos Internos e Miudezas Automotivas",
+  "name": "Catálogo Interno de Balcão - Mangueiras Automotivas",
+  "short_name": "Balcão Mangueiras",
+  "description": "Localizador Visual de Caixas, Códigos e Mangueiras Automotivas",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",

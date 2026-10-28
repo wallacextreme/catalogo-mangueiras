@@ -38,14 +38,14 @@ export function renderHeader(
           <div>
             <div class="flex items-center gap-2">
               <h1 class="text-base font-black tracking-tight text-slate-900 dark:text-white uppercase leading-none">
-                CATÁLOGO DE BALCÃO
+                CATÁLOGO DE MANGUEIRAS
               </h1>
               <span class="bg-amber-500 text-slate-950 font-mono text-[10px] font-black px-1.5 py-0.5 rounded uppercase">
                 Offline-First
               </span>
             </div>
             <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">
-              Localizador Visual de Caixas & Miudezas
+              Localizador Visual de Caixas & Mangueiras de Balcão
             </span>
           </div>
         </div>
@@ -65,7 +65,7 @@ export function renderHeader(
             type="text"
             id="omnibox-search"
             value="${state.searchQuery}"
-            placeholder="Digite Caixa (ex: 940, 10309), Código (MU392, P-185), Veículo ou Peça... (Pressione /)"
+            placeholder="Digite Caixa (ex: 384, 412, 16), Código (21926-9, 15050-0), Veículo (Palio, Gol, Opala)... (Pressione /)"
             class="w-full pl-11 pr-20 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 font-semibold text-sm placeholder:text-slate-400 focus:border-blue-600 dark:focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 outline-none shadow-inner transition-all"
             autocomplete="off"
             spellcheck="false"

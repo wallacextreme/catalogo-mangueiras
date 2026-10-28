@@ -1,37 +1,60 @@
 {
   "docs": {
-    "GRAMPOS,PRESILHAS,BATENTES E ACABAMENTOS...docx": {
-      "total_items": 478,
-      "with_images": 477,
-      "visual_only": 193,
-      "with_box": 388
+    "MANGUEIRAS LINHA FIAT.docx": {
+      "total_items": 104,
+      "with_images": 104,
+      "visual_only": 0,
+      "with_box": 104
     },
-    "PEÇAS (MIUDEZAS) CATALOGO 2.docx": {
-      "total_items": 437,
-      "with_images": 436,
-      "visual_only": 8,
-      "with_box": 425
+    "MANGUEIRAS LINHA FORD.docx": {
+      "total_items": 104,
+      "with_images": 104,
+      "visual_only": 0,
+      "with_box": 104
+    },
+    "MANGUEIRAS LINHA GM.docx": {
+      "total_items": 146,
+      "with_images": 146,
+      "visual_only": 0,
+      "with_box": 146
+    },
+    "MANGUEIRAS LINHA IMPORTADOS.docx": {
+      "total_items": 5,
+      "with_images": 5,
+      "visual_only": 0,
+      "with_box": 5
+    },
+    "MANGUEIRAS LINHA VOLKSWAGEN.docx": {
+      "total_items": 150,
+      "with_images": 150,
+      "visual_only": 0,
+      "with_box": 150
     }
   },
-  "total_products": 915,
-  "total_images": 913,
+  "total_products": 509,
+  "total_images": 509,
   "black_pixels": 0,
   "pixel_failures": 0,
   "sections": {
-    "Grampos, Presilhas, Batentes e Acabamentos": 409,
-    "Porca Rápida e Buchas de Fixação": 49,
-    "Molas em Geral": 3,
-    "Alças, Moldura e Kits Banco": 8,
-    "Parafuso Fixação e Regulagem de Farol": 9,
-    "Reparos de Trambulador e Câmbio": 207,
-    "Castelo Vela (Tucho)": 21,
-    "Calota Cubo Roda": 7,
-    "Porcas Ponta Eixo / Homocinética / Amortecedor": 48,
-    "Bujão e Anéis de Cárter e Caixa": 20,
-    "Parafuso Suspensão / Balança / Motor": 3,
-    "Kit Embreagem e Kits de Pedal": 18,
-    "Bucha Caixa Direção": 11,
-    "Conexões e Engates Rápidos": 98,
-    "Regulagem de Freio": 4
+    "Filtro de Ar": 39,
+    "Radiador Superior": 108,
+    "Bomba D'Água": 48,
+    "Bocal do Tanque / Combustível": 18,
+    "Coletor de Admissão": 20,
+    "Radiador Inferior": 80,
+    "Respiro de Óleo / Antichama": 70,
+    "Aquecedor (Ar Quente)": 57,
+    "Outras Mangueiras": 21,
+    "Direção Hidráulica": 2,
+    "Reservatório de Expansão": 29,
+    "Radiador (Geral)": 13,
+    "Cavalete / Termostato": 4
+  },
+  "lines": {
+    "Linha Fiat": 104,
+    "Linha Ford": 104,
+    "Linha GM": 146,
+    "Linha Importados": 5,
+    "Linha Volkswagen": 150
   }
 }
